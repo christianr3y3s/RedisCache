@@ -1,5 +1,7 @@
-package com.teste.rediscach.redis;
+package com.teste.rediscach.redis.adapter;
 
+import com.teste.rediscach.redis.RedisCacheClient;
+import com.teste.rediscach.redis.RedisCacheProperties;
 import com.teste.rediscach.redis.exceptions.RedisCacheException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +18,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RedisCacheAdapter implements RedisCacheClient{
+public class RedisCacheAdapter implements RedisCacheClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisCacheAdapter.class);
 

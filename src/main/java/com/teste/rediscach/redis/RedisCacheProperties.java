@@ -20,7 +20,7 @@ public class RedisCacheProperties {
 
     private String namespace;
 
-    private Duration ttl = Duration.ofMinutes(30);
+    private Duration ttl = Duration.ofMinutes(5);
 
     private boolean verboseLogging = false;
 }
