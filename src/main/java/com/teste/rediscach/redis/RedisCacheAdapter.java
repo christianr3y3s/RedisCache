@@ -1,15 +1,21 @@
 package com.teste.rediscach.redis;
 
 import com.teste.rediscach.redis.exceptions.RedisCacheException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.Optional;
 
+@Slf4j
+@Service
+@RequiredArgsConstructor
 public class RedisCacheAdapter implements RedisCacheClient{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisCacheAdapter.class);
@@ -17,16 +23,6 @@ public class RedisCacheAdapter implements RedisCacheClient{
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
     private final RedisCacheProperties properties;
-
-    public RedisCacheAdapter(
-            StringRedisTemplate redisTemplate,
-            ObjectMapper objectMapper,
-            RedisCacheProperties properties
-    ) {
-        this.redisTemplate = redisTemplate;
-        this.objectMapper = objectMapper;
-        this.properties = properties;
-    }
 
     @Override
     public <T> void put(String key, T value, Duration ttl) {
