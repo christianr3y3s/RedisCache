@@ -27,7 +27,7 @@ public class RedisCacheAdapter implements RedisCacheClient{
     @Override
     public <T> void put(String key, T value, Duration ttl) {
         String cacheKey = buildKey(key);
-        Duration cacheTtl = ttl != null ? ttl : properties.getDefaultTtl();
+        Duration cacheTtl = ttl != null ? ttl : properties.getTtl();
 
         try {
             String payload = objectMapper.writeValueAsString(value);
