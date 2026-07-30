@@ -80,7 +80,7 @@ class RedisCacheAdapterTest {
         Cliente cliente = new Cliente("teste", 42);
 
         when(objectMapper.writeValueAsString(cliente))
-                .thenReturn("{\"nome\":\"Christian\"}");
+                .thenReturn("{\"nome\":\"teste\"}");
 
         when(redisTemplate.opsForValue())
                 .thenReturn(valueOperations);
@@ -94,7 +94,7 @@ class RedisCacheAdapterTest {
         verify(valueOperations)
                 .set(
                         eq("redis:123"),
-                        eq("{\"nome\":\"Christian\"}"),
+                        eq("{\"nome\":\"teste\"}"),
                         eq(Duration.ofMinutes(30))
                 );
     }
@@ -102,7 +102,7 @@ class RedisCacheAdapterTest {
     @Test
     void shouldThrowRedisCacheExceptionWhenSerializationFails() throws Exception {
 
-        Cliente cliente = new Cliente("Christian", 42);
+        Cliente cliente = new Cliente("teste", 42);
 
         when(objectMapper.writeValueAsString(cliente))
                 .thenThrow(mock(JsonProcessingException.class));
@@ -126,16 +126,16 @@ class RedisCacheAdapterTest {
     @Test
     void shouldReturnObjectWhenCacheExists() throws Exception {
 
-        Cliente cliente = new Cliente("Christian", 42);
+        Cliente cliente = new Cliente("teste", 42);
 
         when(redisTemplate.opsForValue())
                 .thenReturn(valueOperations);
 
         when(valueOperations.get("redis:123"))
-                .thenReturn("{\"nome\":\"Christian\"}");
+                .thenReturn("{\"nome\":\"teste\"}");
 
         when(objectMapper.readValue(
-                "{\"nome\":\"Christian\"}",
+                "{\"nome\":\"teste\"}",
                 Cliente.class))
                 .thenReturn(cliente);
 
@@ -146,7 +146,7 @@ class RedisCacheAdapterTest {
                 );
 
         assertTrue(response.isPresent());
-        assertEquals("Christian", response.get().nome());
+        assertEquals("teste", response.get().nome());
     }
 
     @Test
