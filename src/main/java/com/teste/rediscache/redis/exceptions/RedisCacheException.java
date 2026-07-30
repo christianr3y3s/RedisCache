@@ -1,4 +1,4 @@
-package com.teste.rediscach.redis.exceptions;
+package com.teste.rediscache.redis.exceptions;
 
 public class RedisCacheException extends RuntimeException {
     public RedisCacheException(String message, Throwable cause) {

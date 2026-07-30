@@ -1,4 +1,4 @@
-package com.teste.rediscach.redis.config;
+package com.teste.rediscache.redis.config;
 
 import com.teste.rediscach.redis.RedisCacheProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;

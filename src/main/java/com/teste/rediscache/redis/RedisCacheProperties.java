@@ -1,4 +1,4 @@
-package com.teste.rediscach.redis;
+package com.teste.rediscache.redis;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
