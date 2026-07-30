@@ -1,7 +1,8 @@
 package com.teste.rediscache.redis.adapter;
 
-import com.teste.rediscach.redis.RedisCacheClient;
-import com.teste.rediscach.redis.RedisCacheProperties;
+
+import com.teste.rediscache.redis.RedisCacheClient;
+import com.teste.rediscache.redis.RedisCacheProperties;
 import com.teste.rediscache.redis.exceptions.RedisCacheException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
