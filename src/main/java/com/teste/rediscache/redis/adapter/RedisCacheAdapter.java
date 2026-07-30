@@ -1,4 +1,4 @@
-package com.teste.rediscach.redis.adapter;
+package com.teste.rediscache.redis.adapter;
 
 import com.teste.rediscach.redis.RedisCacheClient;
 import com.teste.rediscach.redis.RedisCacheProperties;
