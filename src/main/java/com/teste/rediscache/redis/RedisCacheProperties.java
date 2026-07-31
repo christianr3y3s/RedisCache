@@ -9,18 +9,15 @@ import java.time.Duration;
 
 @Getter
 @Setter
-@Validated
-@ConfigurationProperties(prefix = "teste.cache.redis")
+@ConfigurationProperties(
+        prefix = "nfe.cache"
+)
 public class RedisCacheProperties {
 
     private boolean enabled = true;
 
-    @NotBlank
-    private String keyPrefix = "cache";
+    private String keyPrefix = "nfe";
 
-    private String namespace;
-
-    private Duration ttl = Duration.ofMinutes(5);
-
-    private boolean verboseLogging = false;
+    private Duration ttl =
+            Duration.ofHours(24);
 }

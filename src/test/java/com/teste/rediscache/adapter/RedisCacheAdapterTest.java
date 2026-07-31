@@ -3,7 +3,7 @@ package com.teste.rediscache.adapter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teste.rediscache.redis.RedisCacheProperties;
-import com.teste.rediscache.redis.adapter.Cliente;
+import com.teste.rediscache.redis.model.Cliente;
 import com.teste.rediscache.redis.adapter.RedisCacheAdapter;
 import com.teste.rediscache.redis.exceptions.RedisCacheException;
 import org.junit.jupiter.api.BeforeEach;

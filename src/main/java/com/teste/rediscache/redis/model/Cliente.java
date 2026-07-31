@@ -1,4 +1,4 @@
-package com.teste.rediscache.redis.adapter;
+package com.teste.rediscache.redis.model;
 
 public record Cliente(
         String nome,
