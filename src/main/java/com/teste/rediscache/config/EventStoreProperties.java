@@ -1,23 +1,21 @@
-package com.teste.rediscache.redis;
+package com.teste.rediscache.config;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
-import java.time.Duration;
 
 @Getter
 @Setter
-@ConfigurationProperties(
-        prefix = "nfe.cache"
-)
-public class RedisCacheProperties {
+@Validated
+@ConfigurationProperties(prefix = "event.store")
+public class EventStoreProperties {
 
     private boolean enabled = true;
 
-    private String keyPrefix = "nfe";
+    @NotBlank
+    private String topic = "event-store";
 
-    private Duration ttl =
-            Duration.ofHours(24);
+    private boolean verboseLogging = false;
 }
