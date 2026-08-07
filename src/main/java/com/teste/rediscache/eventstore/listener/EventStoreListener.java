@@ -14,16 +14,9 @@ public class EventStoreListener {
 
     private final EventStoreClient eventStoreClient;
 
-    @KafkaListener(
-            topics = "${event.store.topic}"
-    )
+    @KafkaListener(topics = "${event.store.topic}"    )
     public void consume(EventMessage event) {
-
-        log.info(
-                "[EVENT_RECEIVED] correlationId={}",
-                event.getCorrelationId()
-        );
-
+        log.info( "[EVENT_RECEIVED] correlationId={}", event.getCorrelationId() );
         eventStoreClient.save(event);
     }
 }
