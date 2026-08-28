@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -27,6 +28,9 @@ class NfeReadModelServiceTest {
 
     @Mock
     private NfeReadModelRepository readModelRepository;
+
+    @Autowired
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
     
     public NfeReadModelServiceTest() {
     }
@@ -36,6 +40,26 @@ class NfeReadModelServiceTest {
         readModelService = new NfeReadModelService(readModelRepository);
     }
 
+    @Test
+    @DisplayName("Sanity Check: Deve validar criacao de tabelas e insercao direta no H2")
+    void h2SanityCheck() {
+        // 1. Valida se a tabela NFE_READMODEL existe no schema do H2
+        Integer tableCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'NFE_READMODEL'",
+                Integer.class
+        );
+        assertThat(tableCount).isEqualTo(1);
+        String chaveTeste = "11111111111111111111111111111111111111111111";
+        NfeReadModelEntity entity = NfeReadModelEntity.builder()
+                .chaveAcesso(chaveTeste)
+                .status("TESTE_H2")
+                .build();
+
+        NfeReadModelEntity saved = readModelRepository.saveAndFlush(entity);
+
+        assertThat(saved).isNotNull();
+        assertThat(readModelRepository.findById(chaveTeste)).isPresent();
+    }
 
     @Test
     @DisplayName("Deve criar novo Read Model quando a chave de acesso nao existir")
@@ -76,7 +100,7 @@ class NfeReadModelServiceTest {
                 .correlationId(correlationId1)
                 .eventType("NFE_RECEBIDA")
                 .payload("{}")
-                .timestamp(Instant.now()) // <-- Alterado aqui
+                .timestamp(Instant.now())
                 .build();
 
         readModelService.applyEvent(eventInicial, chaveAcesso, "PROCESSING");
@@ -86,13 +110,11 @@ class NfeReadModelServiceTest {
                 .correlationId(correlationId2)
                 .eventType("NFE_AUTORIZADA")
                 .payload("{}")
-                .timestamp(Instant.now()) // <-- Alterado aqui
+                .timestamp(Instant.now())
                 .build();
 
-        // When
         NfeReadModelEntity updatedEntity = readModelService.applyEvent(eventAutorizada, chaveAcesso, "AUTORIZADA");
 
-        // Then
         assertThat(updatedEntity.getChaveAcesso()).isEqualTo(chaveAcesso);
         assertThat(updatedEntity.getCorrelationId()).isEqualTo(correlationId2);
         assertThat(updatedEntity.getUltimoEvento()).isEqualTo("NFE_AUTORIZADA");

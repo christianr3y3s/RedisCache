@@ -1,49 +1,50 @@
 package com.teste.rediscache.readmodel.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.data.domain.Persistable;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "NFE_READMODEL")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NfeReadModelEntity {
+public class NfeReadModelEntity implements Persistable<String> {
 
     @Id
     @Column(name = "chave_acesso", nullable = false, length = 44)
     private String chaveAcesso;
 
-    @Column(name = "numero")
-    private String numero;
-
-    @Column(name = "serie")
-    private String serie;
-
-    @Column(name = "status")
-    private String status;
-
-    @Column(name = "ultimo_evento")
-    private String ultimoEvento;
-
-    @Column(name = "correlation_id")
     private String correlationId;
-
-    @Column(name = "data_emissao")
+    private String ultimoEvento;
+    private String status;
+    private String numero;
+    private String serie;
     private LocalDateTime dataEmissao;
-
-    @Column(name = "data_autorizacao")
+    private LocalDateTime dataAtualizacao;
     private LocalDateTime dataAutorizacao;
 
-    @Column(name = "data_atualizacao")
-    private LocalDateTime dataAtualizacao;
+    @Transient
+    @Builder.Default
+    private boolean isNewRecord = true;
+
+    @Override
+    public String getId() {
+        return this.chaveAcesso;
+    }
+
+    @Override
+    public boolean isNew() {
+        return this.isNewRecord;
+    }
+
+    @PostLoad
+    @PostPersist
+    void markNotNew() {
+        this.isNewRecord = false;
+    }
 }
