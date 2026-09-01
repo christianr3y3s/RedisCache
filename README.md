@@ -1,37 +1,62 @@
-# Lightweight Rust Saga Event Orchestrator
+# Saga Orchestrator (Rust + Kafka) — config-driven
 
-[![Rust](https://img.shields.io/badge/Rust-1.75%2B-orange.svg)](https://www.rust-lang.org/)
-[![Tokio](https://img.shields.io/badge/Async-Tokio-blue.svg)](https://tokio.rs/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+Este projeto é um **orquestrador genérico** (control-plane) para fluxos estilo **Saga**, dirigido por **eventos Kafka**.
+A ideia é: **ninguém mexe no código**; fluxo, eventos, rotas e timeouts ficam em `orchestrator.properties`.
 
-A minimal, ultra-low-overhead Saga Pattern orchestrator written in Rust. Designed for event-driven architectures requiring strict transaction consistency, fast execution, and zero unnecessary dependencies.
+## O que já vem pronto
+- Consumer Kafka async (rdkafka + tokio)
+- Producer Kafka async
+- Leitura de `orchestrator.properties` (parser simples, sem libs mágicas)
+- State Store via **tópico compactado** (`_orchestrator.state`) com chave = `sagaType|sagaId`
+- DLQ (`_orchestrator.dlq`) e Retry (`_orchestrator.retry`) configuráveis
 
----
+## Pré-requisitos
+- Docker (para Kafka local)
+- Rust (rustup)
 
-## 🎯 Purpose & Key Features
+## Subir Kafka local
+```bash
+docker compose up -d
+```
 
-This orchestrator manages distributed transactions across microservices using the **Saga Execution Coordinator (SEC)** pattern (Orchestration-based Saga).
+## Criar tópicos (inclui state compactado)
+```bash
+./scripts/create-topics.sh
+```
 
-- **Minimal Footprint:** Zero heavy runtime frameworks—just lightweight async Rust (`tokio`).
-- **Resilient Compensation:** Built-in forward execution and automatic backward compensation triggers on failure.
-- **Event-Driven & Decoupled:** Consumes and routes domain events with minimal memory overhead.
-- **Predictable Latency:** No GC pauses, ensuring deterministic execution times for critical workflows.
+## Rodar o orquestrador
+```bash
+cargo run
+```
 
----
+## Teste rápido: produzir evento
+Use o console producer do Kafka (dentro do container):
+```bash
+docker exec -it kafka bash
+kafka-console-producer --bootstrap-server localhost:9092 --topic orders.created
+```
+Cole um JSON (precisa ter `type` e `correlationId` por padrão):
+```json
+{"type":"OrderCreated","correlationId":"order-123","payload":{"x":1}}
+```
 
-## 🏛️ Architecture Overview
+Você verá no log do orquestrador:
+- evento recebido
+- comandos publicados (definidos no properties)
+- estado atualizado no `_orchestrator.state`
 
-```text
-       [ Incoming Event ]
-               │
-               ▼
-   ┌───────────────────────┐
-   │    Saga Orchestrator  │  <--- State Machine (Rust)
-   └───────────┬───────────┘
-               │
-     ┌─────────┴─────────┐
-     ▼                   ▼
-[ Step 1: Execute ]  [ Failure Detection ]
-     │                   │
-     ▼                   ▼
-[ Step 2: Next ]     [ Rollback / Compensate ]
+## Onde mudar o comportamento
+- `orchestrator.properties` (tudo)
+
+## Observações
+- Este template mantém o motor genérico. Você pode evoluir as regras para uma FSM (máquina de estados) declarativa usando o mesmo arquivo.
+
+# Security and Identity
+
+This repository documents **application-level identity decisions explicitly**.
+
+Events and commands may carry a JSON Web Token (JWT) inside the payload in order to
+express logical identity and authorization in a language-agnostic way.
+
+Transport- and broker-level security (TLS, SASL, ACLs) are intentionally treated as
+separate concerns and are expected to be enforced by the messaging infrastructure.
